@@ -1,20 +1,19 @@
 # TODO
 # for man - rst2man.py needed (docutils snap?)
+# - puppet user/group
+# - initscripts
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
-Version:	2.6.6
+Version:	2.6.13
 Release:	0.1
 License:	GPL v2+
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
-# Source0-md5:	58315e94ff00aedc4a19177877c3e865
-# ftools fix
-Patch0:		https://github.com/housejester/puppet/commit/6409be5b2fde49c21593f557b9174c7e465a422b.patch
-# Patch0-md5:	58315e94ff00aedc4a19177877c3e865
+# Source0-md5:	e7d684c4d0b0f130aa54de4bb6759824
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
-BuildRequires:	rpmbuild(macros) >= 1.277
-BuildRequires:	ruby >= 1:1.8.1
+BuildRequires:	rpmbuild(macros) >= 1.484
+BuildRequires:	ruby >= 1:1.8.6
 BuildRequires:	ruby-facter >= 1.5
 Requires:	ruby >= 1:1.8.1
 Requires:	ruby-facter >= 1.5
@@ -44,7 +43,6 @@ file server.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 
@@ -60,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README CHANGELOG examples
+%doc README.md README.queueing CHANGELOG examples
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/puppet/auth.conf
 %attr(755,root,root) %{_bindir}/filebucket
 %attr(755,root,root) %{_bindir}/pi
