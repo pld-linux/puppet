@@ -5,7 +5,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	2.7.18
-Release:	0.2
+Release:	0.3
 License:	GPL v2+
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -41,6 +41,14 @@ Provides the central puppet server daemon which provides manifests to
 clients. The server can also function as a certificate authority and
 file server.
 
+%package -n vim-syntax-puppet
+Summary:	Vim syntax for puppet .pp files
+Group:		Applications/Editors/Vim
+Requires:	vim-rt >= 4:7.2.170
+
+%description -n vim-syntax-puppet
+Vim syntax for puppet .pp files
+
 %prep
 %setup -q
 
@@ -55,6 +63,11 @@ rm -rf $RPM_BUILD_ROOT
 	--destdir=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/modules,%{_datadir}/%{name}/modules}
+
+# Install vim syntax files
+install -d $RPM_BUILD_ROOT%{_datadir}/vim/{ftdetect,syntax}
+cp -p ext/vim/ftdetect/puppet.vim $RPM_BUILD_ROOT%{_datadir}/vim/ftdetect/puppet.vim
+cp -p ext/vim/syntax/puppet.vim $RPM_BUILD_ROOT%{_datadir}/vim/syntax/puppet.vim
 
 install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
@@ -132,3 +145,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/puppetmasterd.8*
 %{_mandir}/man8/puppetrun.8*
 %{_mandir}/man8/puppetqd.8*
+
+%files -n vim-syntax-puppet
+%defattr(644,root,root,755)
+%{_datadir}/vim/ftdetect/puppet.vim
+%{_datadir}/vim/syntax/puppet.vim
+
