@@ -5,7 +5,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	2.7.18
-Release:	0.1
+Release:	0.2
 License:	GPL v2+
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -54,6 +54,8 @@ rm -rf $RPM_BUILD_ROOT
 	--no-rdoc \
 	--destdir=$RPM_BUILD_ROOT
 
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/modules,%{_datadir}/%{name}/modules}
+
 install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
@@ -64,6 +66,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc README.md CHANGELOG
 %dir %{_sysconfdir}/%{name}
+%dir %{_sysconfdir}/%{name}/modules
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/auth.conf
 %attr(755,root,root) %{_bindir}/filebucket
 %attr(755,root,root) %{_bindir}/pi
@@ -72,6 +75,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ralsh
 %attr(755,root,root) %{_sbindir}/puppetca
 %attr(755,root,root) %{_sbindir}/puppetd
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/modules
 %{ruby_sitelibdir}/puppet
 %{ruby_sitelibdir}/puppet.rb
 %{ruby_sitelibdir}/semver.rb
