@@ -63,7 +63,8 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc README.md CHANGELOG
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/puppet/auth.conf
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/auth.conf
 %attr(755,root,root) %{_bindir}/filebucket
 %attr(755,root,root) %{_bindir}/pi
 %attr(755,root,root) %{_bindir}/puppet
