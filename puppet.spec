@@ -5,12 +5,13 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	2.7.18
-Release:	0.4
+Release:	0.5
 License:	GPL v2+
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
 # Source0-md5:	210725704692a0ca7b8ffc312471796e
 Patch0:		install-p.patch
+Patch1:		ruby19.patch
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
 BuildRequires:	rpmbuild(macros) >= 1.484
@@ -53,6 +54,7 @@ Vim syntax for puppet .pp files
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 # puppet-queue.conf is more of an example, used for stompserver
 mv conf/puppet-queue.conf examples/etc/puppet/
