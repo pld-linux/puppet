@@ -30,18 +30,18 @@ separate elements normally aggregated in different files, like users,
 cron jobs, and hosts, along with obviously discrete elements like
 packages, services, and files.
 
-#%package server
-#Summary:	Server for the puppet system management tool
-#Group:		Base
-#Requires:	%{name} = %{version}-%{release}
-#Requires(post):	/sbin/chkconfig
-#Requires(preun):	/sbin/chkconfig
-#Requires:	rc-scripts
+%package server
+Summary:	Server for the puppet system management tool
+Group:		Base
+Requires:	%{name} = %{version}-%{release}
+Requires(post):	/sbin/chkconfig
+Requires(preun):	/sbin/chkconfig
+Requires:	rc-scripts
 
-#%description server
-#Provides the central puppet server daemon which provides manifests to
-#clients. The server can also function as a certificate authority and
-#file server.
+%description server
+Provides the central puppet server daemon which provides manifests to
+clients. The server can also function as a certificate authority and
+file server.
 
 %package -n vim-syntax-puppet
 Summary:	Vim syntax for puppet .pp files
@@ -141,14 +141,16 @@ rm -rf $RPM_BUILD_ROOT
 #%{_mandir}/man8/ralsh.8*
 %{_examplesdir}/%{name}-%{version}
 
-#%files server
-#%defattr(644,root,root,755)
-#%attr(755,root,root) %{_sbindir}/puppetmasterd
-#%attr(755,root,root) %{_sbindir}/puppetrun
-#%attr(755,root,root) %{_sbindir}/puppetqd
-#%{_mandir}/man8/puppetmasterd.8*
-#%{_mandir}/man8/puppetrun.8*
-#%{_mandir}/man8/puppetqd.8*
+%if 0
+%files server
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_sbindir}/puppetmasterd
+%attr(755,root,root) %{_sbindir}/puppetrun
+%attr(755,root,root) %{_sbindir}/puppetqd
+%{_mandir}/man8/puppetmasterd.8*
+%{_mandir}/man8/puppetrun.8*
+%{_mandir}/man8/puppetqd.8*
+%endif
 
 %files -n vim-syntax-puppet
 %defattr(644,root,root,755)
