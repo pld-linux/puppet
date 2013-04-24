@@ -15,9 +15,9 @@ Patch1:		ruby19.patch
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
 BuildRequires:	rpmbuild(macros) >= 1.484
-BuildRequires:	ruby >= 1:1.8.6
+BuildRequires:	ruby >= 1:1.8.7
 BuildRequires:	ruby-facter >= 1.5
-Requires:	ruby >= 1:1.8.1
+Requires:	ruby >= 1:1.8.7
 Requires:	ruby-facter >= 1.5
 Requires:	ruby-shadow
 #%{?ruby_mod_ver_requires_eq}
