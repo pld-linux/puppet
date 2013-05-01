@@ -1,17 +1,16 @@
 # TODO
 # for man - rst2man.py needed (docutils snap?)
-# - puppet user/group
-# - initscripts
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.1.1
-Release:	0.7
+Release:	0.8
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
 # Source0-md5:	e942079612703a460a9fdb52e6bcae4a
 Patch0:		install-p.patch
 Patch1:		ruby19.patch
+Patch2:		rundir-perms.patch
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
 BuildRequires:	rpm-rubyprov
@@ -67,6 +66,7 @@ Vim syntax for puppet .pp files
 %setup -q
 #%patch0 -p1
 #%patch1 -p1
+%patch2 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -162,6 +162,11 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/puppet.conf
 %attr(754,root,root) /etc/rc.d/init.d/puppet
 %{systemdtmpfilesdir}/puppet.conf
+
+# These need to be owned by puppet so the server can write to them.
+%dir %attr(755,puppet,puppet) %{_localstatedir}/run/%{name}
+%dir %attr(755,puppet,puppet) %{_localstatedir}/log/%{name}
+%dir %{_localstatedir}/lib/%{name}
 
 %files server
 %defattr(644,root,root,755)
