@@ -3,7 +3,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.1.1
-Release:	0.10
+Release:	0.11
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -47,8 +47,7 @@ packages, services, and files.
 Summary:	Server for the puppet system management tool
 Group:		Base
 Requires:	%{name} = %{version}-%{release}
-Requires(post):	/sbin/chkconfig
-Requires(preun):	/sbin/chkconfig
+Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
 
 %description server
@@ -151,6 +150,30 @@ if [ "$1" = "0" ]; then
 	%groupremove puppet
 fi
 
+%post
+/sbin/chkconfig --add puppet
+%service puppet restart
+
+%preun
+if [ "$1" = "0" ]; then
+	%service -q puppet stop
+	/sbin/chkconfig --del puppet
+fi
+
+%post server
+/sbin/chkconfig --add puppetmaster
+/sbin/chkconfig --add puppetqueue
+%service puppetmaster restart
+%service puppetqueue restart
+
+%preun server
+if [ "$1" = "0" ]; then
+	/sbin/chkconfig --del puppetmaster
+	/sbin/chkconfig --del puppetqueue
+	%service -q puppetmaster stop
+	%service -q puppetqueue stop
+fi
+
 %post -n openldap-schema-%{name}
 %openldap_schema_register %{schemadir}/%{name}.schema -d core
 %service -q ldap restart
@@ -160,6 +183,7 @@ if [ "$1" = "0" ]; then
 	%openldap_schema_unregister %{schemadir}/%{name}.schema
 	%service -q ldap restart
 fi
+
 
 %files
 %defattr(644,root,root,755)
