@@ -5,7 +5,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.1.1
-Release:	0.5
+Release:	0.7
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -28,10 +28,10 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
+Requires:	hiera < 2
+Requires:	hiera >= 1.0
 Requires:	ruby-facter < 2
 Requires:	ruby-facter >= 1.6
-Requires:	ruby-hiera < 2
-Requires:	ruby-hiera >= 1.0
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
