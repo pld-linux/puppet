@@ -3,7 +3,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.1.1
-Release:	0.8
+Release:	0.10
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -34,6 +34,8 @@ Requires:	ruby-facter >= 1.6
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		schemadir	/usr/share/openldap/schema
+
 %description
 Puppet lets you centrally manage every important aspect of your system
 using a cross-platform specification language that manages all the
@@ -54,12 +56,27 @@ Provides the central puppet server daemon which provides manifests to
 clients. The server can also function as a certificate authority and
 file server.
 
-%package -n vim-syntax-puppet
+%package -n openldap-schema-%{name}
+Summary:	Puppet LDAP schema
+Summary(pl.UTF-8):	Schemat LDAP dla Puppet
+Group:		Networking/Daemons
+Requires(post,postun):	sed >= 4.0
+Requires:	openldap-schema-rfc2739
+Requires:	openldap-servers
+Requires:	sed >= 4.0
+
+%description -n openldap-schema-%{name}
+This package contains puppet.schema for openldap.
+
+%description -n openldap-schema-%{name} -l pl.UTF-8
+Ten pakiet zawiera puppet.schema dla pakietu openldap.
+
+%package -n vim-syntax-%{name}
 Summary:	Vim syntax for puppet .pp files
 Group:		Applications/Editors/Vim
 Requires:	vim-rt >= 4:7.2.170
 
-%description -n vim-syntax-puppet
+%description -n vim-syntax-%{name}
 Vim syntax for puppet .pp files
 
 %prep
@@ -94,6 +111,9 @@ cp -p ext/redhat/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/puppet
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}
 cp -a ext $RPM_BUILD_ROOT%{_datadir}/%{name}
 
+install -d $RPM_BUILD_ROOT%{schemadir}
+cp -p ext/ldap/puppet.schema $RPM_BUILD_ROOT%{schemadir}
+
 # Install vim syntax files
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/{ftdetect,syntax}
 mv $RPM_BUILD_ROOT{%{_datadir}/%{name}/ext/vim/ftdetect/puppet.vim,%{_datadir}/vim/ftdetect}
@@ -105,9 +125,10 @@ cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 # emacs and vim bits are installed elsewhere
 %{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{emacs,vim}
 
-# remove misc packaging artifacts not applicable to rpms
-%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{gentoo,freebsd,redhat,solaris,systemd,suse,windows,osx,ips,debian}
-%{__rm} $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{build_defaults.yaml,project_data.yaml}
+# remove misc packaging artifacts not applicable to rpms or other cruft
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{gentoo,freebsd,solaris,suse,windows,osx,ips,debian}
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{redhat,ldap,systemd}
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{build_defaults.yaml,project_data.yaml,envpuppet*}
 
 # Rpmlint fixup
 chmod 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/regexp_nodes/regexp_nodes.rb
@@ -128,6 +149,16 @@ rm -rf $RPM_BUILD_ROOT
 if [ "$1" = "0" ]; then
 	%userremove puppet
 	%groupremove puppet
+fi
+
+%post -n openldap-schema-%{name}
+%openldap_schema_register %{schemadir}/%{name}.schema -d core
+%service -q ldap restart
+
+%postun -n openldap-schema-%{name}
+if [ "$1" = "0" ]; then
+	%openldap_schema_unregister %{schemadir}/%{name}.schema
+	%service -q ldap restart
 fi
 
 %files
@@ -178,7 +209,11 @@ fi
 %{_mandir}/man8/puppet-ca.8*
 %{_mandir}/man8/puppet-master.8*
 
-%files -n vim-syntax-puppet
+%files -n openldap-schema-%{name}
+%defattr(644,root,root,755)
+%{schemadir}/*.schema
+
+%files -n vim-syntax-%{name}
 %defattr(644,root,root,755)
 %{_datadir}/vim/ftdetect/puppet.vim
 %{_datadir}/vim/syntax/puppet.vim
