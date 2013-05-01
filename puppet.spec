@@ -5,7 +5,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.1.1
-Release:	0.4
+Release:	0.5
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
@@ -76,15 +76,42 @@ rm -rf $RPM_BUILD_ROOT
 	--sitelibdir=%{ruby_vendorlibdir} \
 	--destdir=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/modules,%{_datadir}/%{name}/modules}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/{manifests,modules},%{_datadir}/%{name}/modules} \
+	$RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d} \
+	$RPM_BUILD_ROOT%{_localstatedir}/{lib,log,run}/%{name}
+
+cp -p ext/redhat/client.sysconfig $RPM_BUILD_ROOT/etc/sysconfig/puppet
+cp -p ext/redhat/client.init $RPM_BUILD_ROOT/etc/rc.d/init.d/puppet
+cp -p ext/redhat/server.sysconfig $RPM_BUILD_ROOT/etc/sysconfig/puppetmaster
+cp -p ext/redhat/server.init $RPM_BUILD_ROOT/etc/rc.d/init.d/puppetmaster
+cp -p ext/redhat/queue.init $RPM_BUILD_ROOT/etc/rc.d/init.d/puppetqueue
+
+cp -p ext/redhat/fileserver.conf $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/fileserver.conf
+cp -p ext/redhat/puppet.conf $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/puppet.conf
+cp -p ext/redhat/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/puppet
+
+# Install the ext/ directory to %{_datadir}/%{name}
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}
+cp -a ext $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 # Install vim syntax files
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/{ftdetect,syntax}
-cp -p ext/vim/ftdetect/puppet.vim $RPM_BUILD_ROOT%{_datadir}/vim/ftdetect/puppet.vim
-cp -p ext/vim/syntax/puppet.vim $RPM_BUILD_ROOT%{_datadir}/vim/syntax/puppet.vim
+mv $RPM_BUILD_ROOT{%{_datadir}/%{name}/ext/vim/ftdetect/puppet.vim,%{_datadir}/vim/ftdetect}
+mv $RPM_BUILD_ROOT{%{_datadir}/%{name}/ext/vim/syntax/puppet.vim,%{_datadir}/vim/syntax}
 
 install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
+
+# emacs and vim bits are installed elsewhere
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{emacs,vim}
+
+# remove misc packaging artifacts not applicable to rpms
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{gentoo,freebsd,redhat,solaris,systemd,suse,windows,osx,ips,debian}
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/{build_defaults.yaml,project_data.yaml}
+
+# Rpmlint fixup
+chmod 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/regexp_nodes/regexp_nodes.rb
+chmod 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/puppet-load.rb
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -107,34 +134,41 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/auth.conf
 %attr(755,root,root) %{_bindir}/extlookup2hiera
 %attr(755,root,root) %{_bindir}/puppet
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/modules
 %{ruby_vendorlibdir}/puppet
 %{ruby_vendorlibdir}/puppet.rb
 %{ruby_vendorlibdir}/semver.rb
 %{_mandir}/man5/puppet.conf.5*
 %{_mandir}/man8/extlookup2hiera.8*
 %{_mandir}/man8/puppet*.8*
+%exclude %{_mandir}/man8/puppet-ca.8*
+%exclude %{_mandir}/man8/puppet-master.8*
 %{_examplesdir}/%{name}-%{version}
+
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/modules
+%{_datadir}/%{name}/ext
 
 # hiera addons
 %{ruby_vendorlibdir}/hiera/backend/puppet_backend.rb
 %{ruby_vendorlibdir}/hiera/scope.rb
 %{ruby_vendorlibdir}/hiera_puppet.rb
 
-%if 0
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/puppet
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/puppet
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/puppet.conf
+%attr(754,root,root) /etc/rc.d/init.d/puppet
+
 %files server
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_sbindir}/puppetmasterd
-%attr(755,root,root) %{_sbindir}/puppetrun
-%attr(755,root,root) %{_sbindir}/puppetqd
-%{_mandir}/man8/puppetmasterd.8*
-%{_mandir}/man8/puppetrun.8*
-%{_mandir}/man8/puppetqd.8*
-%endif
+%dir %{_sysconfdir}/%{name}/manifests
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/fileserver.conf
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/puppetmaster
+%attr(754,root,root) /etc/rc.d/init.d/puppetmaster
+%attr(754,root,root) /etc/rc.d/init.d/puppetqueue
+%{_mandir}/man8/puppet-ca.8*
+%{_mandir}/man8/puppet-master.8*
 
 %files -n vim-syntax-puppet
 %defattr(644,root,root,755)
 %{_datadir}/vim/ftdetect/puppet.vim
 %{_datadir}/vim/syntax/puppet.vim
-
