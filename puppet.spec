@@ -220,7 +220,7 @@ fi
 
 # These need to be owned by puppet so the server can write to them.
 %dir %attr(755,puppet,puppet) %{_localstatedir}/run/%{name}
-%dir %attr(755,puppet,puppet) %{_localstatedir}/log/%{name}
+%dir %attr(750,puppet,puppet) %{_localstatedir}/log/%{name}
 %dir %{_localstatedir}/lib/%{name}
 
 %files server
