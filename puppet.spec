@@ -113,6 +113,10 @@ cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 chmod 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/regexp_nodes/regexp_nodes.rb
 chmod 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/ext/puppet-load.rb
 
+install -d $RPM_BUILD_ROOT%{systemdtmpfilesdir}
+echo "D /var/run/%{name} 0755 %{name} %{name} -" > \
+    $RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{name}.conf
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -157,6 +161,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/puppet
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/puppet.conf
 %attr(754,root,root) /etc/rc.d/init.d/puppet
+%{systemdtmpfilesdir}/puppet.conf
 
 %files server
 %defattr(644,root,root,755)
