@@ -20,6 +20,14 @@ BuildRequires:	ruby-facter >= 1.6
 BuildRequires:	sed >= 4.0
 BuildRequires:	which
 BuildConflicts:	ruby-ftools
+Provides:	group(puppet)
+Provides:	user(puppet)
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
 Requires:	ruby-facter < 2
 Requires:	ruby-facter >= 1.6
 Requires:	ruby-hiera < 2
@@ -80,6 +88,16 @@ cp -a examples/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%pre
+%groupadd -g 292 puppet
+%useradd -u 292 -g puppet -c "Puppet" -d %{_localstatedir}/lib/%{name} puppet
+
+%postun
+if [ "$1" = "0" ]; then
+	%userremove puppet
+	%groupremove puppet
+fi
 
 %files
 %defattr(644,root,root,755)
