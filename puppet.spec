@@ -2,17 +2,17 @@
 # for man - rst2man.py needed (docutils snap?)
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
-Version:	3.1.1
-Release:	0.11
+Version:	3.7.3
+Release:	0.1
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
-# Source0-md5:	e942079612703a460a9fdb52e6bcae4a
+# Source0-md5:	cc294da1d51df07bcc7f6cf78bd90ce0
 Patch0:		install-p.patch
 Patch1:		ruby19.patch
-Patch2:		rundir-perms.patch
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
+BuildRequires:	hiera
 BuildRequires:	rpm-rubyprov
 BuildRequires:	rpmbuild(macros) >= 1.656
 BuildRequires:	ruby-facter >= 1.6
@@ -82,7 +82,6 @@ Vim syntax for puppet .pp files
 %setup -q
 #%patch0 -p1
 #%patch1 -p1
-%patch2 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -196,6 +195,8 @@ fi
 %{ruby_vendorlibdir}/puppet
 %{ruby_vendorlibdir}/puppet.rb
 %{ruby_vendorlibdir}/semver.rb
+%{ruby_vendorlibdir}/puppetx.rb
+%{ruby_vendorlibdir}/puppetx
 %{_mandir}/man5/puppet.conf.5*
 %{_mandir}/man8/extlookup2hiera.8*
 %{_mandir}/man8/puppet*.8*
