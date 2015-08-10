@@ -4,12 +4,12 @@
 # - initscripts
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
-Version:	2.7.21
+Version:	2.7.26
 Release:	0.1
 License:	GPL v2+
 Group:		Networking/Admin
-Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
-# Source0-md5:	cfea4e3f8cf268c1340aa5c295b3d7f0
+Source0:	https://downloads.puppetlabs.com/puppet/%{name}-%{version}.tar.gz
+# Source0-md5:	2307f891e45e82597dbd1e126b3381ab
 URL:		http://www.puppetlabs.com/
 BuildRequires:	docutils
 BuildRequires:	rpmbuild(macros) >= 1.484
@@ -18,7 +18,7 @@ BuildRequires:	ruby-facter >= 1.5
 Requires:	ruby >= 1:1.8.1
 Requires:	ruby-facter >= 1.5
 Requires:	ruby-shadow
-#%{?ruby_mod_ver_requires_eq}
+BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -60,6 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__ruby} install.rb \
 	--quick \
 	--no-rdoc \
+	--sitelibdir=%{ruby_vendorlibdir} \
 	--destdir=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/modules,%{_datadir}/%{name}/modules}
@@ -90,9 +91,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/puppetd
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/modules
-%{ruby_sitelibdir}/puppet
-%{ruby_sitelibdir}/puppet.rb
-%{ruby_sitelibdir}/semver.rb
+%{ruby_vendorlibdir}/puppet
+%{ruby_vendorlibdir}/puppet.rb
+%{ruby_vendorlibdir}/semver.rb
 %{_mandir}/man5/puppet.conf.5*
 %{_mandir}/man8/filebucket.8*
 %{_mandir}/man8/pi.8*
@@ -150,4 +151,3 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vim/ftdetect/puppet.vim
 %{_datadir}/vim/syntax/puppet.vim
-
