@@ -27,10 +27,10 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires:	hiera < 2
+Requires:	hiera < 3
 Requires:	hiera >= 1.0
-Requires:	ruby-facter < 2
-Requires:	ruby-facter >= 1.6
+Requires:	ruby-facter < 4
+Requires:	ruby-facter >= 2.0
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
