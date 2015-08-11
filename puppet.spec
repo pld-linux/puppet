@@ -3,11 +3,11 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.7.3
-Release:	0.1
+Release:	0.4
 License:	Apache v2.0
 Group:		Networking/Admin
-Source0:	http://puppetlabs.com/downloads/puppet/%{name}-%{version}.tar.gz
-# Source0-md5:	cc294da1d51df07bcc7f6cf78bd90ce0
+Source0:	http://rubygems.org/downloads/%{name}-%{version}.gem
+# Source0-md5:	f25bfe4d20a8d8c1e99622072331d0f5
 Patch0:		install-p.patch
 Patch1:		ruby19.patch
 URL:		http://www.puppetlabs.com/
@@ -83,6 +83,12 @@ Vim syntax for puppet .pp files
 #%patch0 -p1
 #%patch1 -p1
 
+%build
+# write .gemspec
+%__gem_helper spec
+# why pure? just json will do
+%{__sed} -i -e 's/json_pure/json/' *.gemspec
+
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__ruby} install.rb \
@@ -91,9 +97,12 @@ rm -rf $RPM_BUILD_ROOT
 	--sitelibdir=%{ruby_vendorlibdir} \
 	--destdir=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/{manifests,modules},%{_datadir}/%{name}/modules} \
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name}/{manifests,modules},%{_datadir}/%{name}/modules,%{ruby_specdir}} \
 	$RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d} \
 	$RPM_BUILD_ROOT%{_localstatedir}/{lib,log,run}/%{name}
+
+# install gemspec
+cp -p %{name}-%{version}.gemspec $RPM_BUILD_ROOT%{ruby_specdir}
 
 cp -p ext/redhat/client.sysconfig $RPM_BUILD_ROOT/etc/sysconfig/puppet
 cp -p ext/redhat/client.init $RPM_BUILD_ROOT/etc/rc.d/init.d/puppet
@@ -197,6 +206,7 @@ fi
 %{ruby_vendorlibdir}/semver.rb
 %{ruby_vendorlibdir}/puppetx.rb
 %{ruby_vendorlibdir}/puppetx
+%{ruby_specdir}/%{name}-%{version}.gemspec
 %{_mandir}/man5/puppet.conf.5*
 %{_mandir}/man8/extlookup2hiera.8*
 %{_mandir}/man8/puppet*.8*
