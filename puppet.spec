@@ -2,12 +2,12 @@
 # for man - rst2man.py needed (docutils snap?)
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
-Version:	3.7.3
-Release:	0.4
+Version:	3.7.5
+Release:	1
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://rubygems.org/downloads/%{name}-%{version}.gem
-# Source0-md5:	f25bfe4d20a8d8c1e99622072331d0f5
+# Source0-md5:	c30fdf893061e9c0e02a026dbc382f19
 Patch0:		install-p.patch
 Patch1:		ruby19.patch
 URL:		http://www.puppetlabs.com/
@@ -222,6 +222,7 @@ fi
 %{ruby_vendorlibdir}/hiera/backend/puppet_backend.rb
 %{ruby_vendorlibdir}/hiera/scope.rb
 %{ruby_vendorlibdir}/hiera_puppet.rb
+%{ruby_vendorlibdir}/hiera/puppet_function.rb
 
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/puppet
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/puppet
