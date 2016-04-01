@@ -3,7 +3,7 @@
 Summary:	A network tool for managing many disparate systems
 Name:		puppet
 Version:	3.7.5
-Release:	1
+Release:	2
 License:	Apache v2.0
 Group:		Networking/Admin
 Source0:	http://rubygems.org/downloads/%{name}-%{version}.gem
